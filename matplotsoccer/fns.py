@@ -257,6 +257,11 @@ def heatmap(
         plt.show()
     return ax
 
+def heatmap_green(matrix, ax=None, figsize=None,show=True):
+    if ax is None:
+        ax = _field(linecolor="white",fieldcolor="white",show=False)
+    return heatmap(matrix,ax=ax,invert=True,show=show,cmap="RdYlGn")
+
 def actions(
     location,
     action_type = None,
@@ -343,7 +348,10 @@ def actions(
         dx = (xmax - xmin) / 2
         my = (ymin + ymax) / 2
         dy =(ymax - ymin) / 2
-        d = max(dx,dy)
+        if type(zoom) == bool: 
+            d = max(dx,dy)
+        else:
+            d = zoom
         
         text_offset = 0.07*d
 

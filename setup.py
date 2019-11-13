@@ -1,7 +1,7 @@
 import setuptools
 
 setuptools.setup(name='matplotsoccer',
-      version='0.0.6',
+      version='0.0.7',
       description='Library for visualizing soccer event stream data',
       url='http://github.com/tomdecroos/matplotsoccer',
       author='Tom Decroos',
