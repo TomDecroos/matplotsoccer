@@ -16,7 +16,7 @@ You can also:
 - adjust the figure size
 - add a scatterplot
 - reactivate the axis.
-```
+```python
 matplotsoccer.field("green",figsize=8, show=False)
 plt.scatter(x,y)
 plt.axis("on")
@@ -25,7 +25,7 @@ plt.show()
 ![](img/scatter.png)
 
 ## 2. Plotting a heatmap with `matplotsoccer.heatmap()`
-```
+```python
 hm = matplotsoccer.count(x,y,n=25,m=25) # Construct a 25x25 heatmap from x,y-coordinates
 hm = scipy.ndimage.gaussian_filter(hm,1) # blur the heatmap
 matplotsoccer.heatmap(hm) # plot the heatmap
@@ -36,7 +36,7 @@ The most important parameters are:
 - the color map (any color map accepted by matplotlib will work)
 - the color of the field lines
 - adding a colorbar to the right of the heatmap
-```
+```python
 matplotsoccer.heatmap(hm,cmap="hot",linecolor="white",cbar=True)
 ```
 ![](img/heatmap_hot.png)
@@ -56,7 +56,7 @@ Here is an example of five actions in the SPADL format (see https://github.com/M
 
 
 Here is the phase visualized using `matplotsoccer.actions()`
-```
+```python
 matplotsoccer.actions(
     location=actions[["start_x", "start_y", "end_x", "end_y"]],
     action_type=actions.type_name,
