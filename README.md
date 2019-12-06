@@ -7,19 +7,43 @@ To install it simply
 pip install matplotsoccer
 ```
 
-The most important functions are 
+## 1. Plotting a 108 x 65 soccer field with `matplotsoccer.field()`:
 
-1. Plotting a field with `matplotsoccer.field()`:
+![](img/whitefield.png)
 
-![](img/white_field.png)
+You can also:
+- plot a green field with white lines instead of a white field with black lines
+- adjust the figure size
+- add a scatterplot
+- reactivate the axis.
+```
+matplotsoccer.field("green",figsize=8, show=False)
+plt.scatter(x,y)
+plt.axis("on")
+plt.show()
+```
+![](img/scatter.png)
 
-![](img/green_field.png)
+## 2. Plotting a heatmap with `matplotsoccer.heatmap()`
+```
+hm = matplotsoccer.count(x,y,n=25,m=25) # Construct a 25x25 heatmap from x,y-coordinates
+hm = scipy.ndimage.gaussian_filter(hm,1) # blur the heatmap
+matplotsoccer.heatmap(hm) # plot the heatmap
+```
+![](img/heatmap_blue.png)
 
-2. Plotting a heatmap with `matplotsoccer.heatmap(matrix)`
+The most important parameters are:
+- the color map (any color map accepted by matplotlib will work)
+- the color of the field lines
+- adding a colorbar to the right of the heatmap
+```
+matplotsoccer.heatmap(hm,cmap="hot",linecolor="white",cbar=True)
+```
+![](img/heatmap_hot.png)
 
-![](img/heatmap.png)
 
-3. Plotting soccer event stream data. Here is an example of five actions in the SPADL format (see https://github.com/ML-KULeuven/socceraction) leading up to Belgium's second goal against England in the third place play-off in the 2018 FIFA world cup.
+## 3. Plotting soccer event stream data with `matplotsoccer.actions()`
+Here is an example of five actions in the SPADL format (see https://github.com/ML-KULeuven/socceraction) leading up to Belgium's second goal against England in the third place play-off in the 2018 FIFA world cup.
 
 
 |   game_id |   period_id |   seconds | team    | player          |   start_x |   start_y |   end_x |   end_y | actiontype   | result   | bodypart   |
