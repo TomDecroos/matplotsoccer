@@ -229,14 +229,23 @@ def count(x, y, n=50, m=50):
     return vector.reshape((m, n))
 
 
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+
+
 def heatmap(
-    matrix, ax=None, figsize=None, alpha=1, cmap="Blues", invert=False, show=True
+    matrix,
+    ax=None,
+    figsize=None,
+    alpha=1,
+    cmap="Blues",
+    linecolor="black",
+    cbar=False,
+    show=True,
 ):
     if ax is None:
-        ax = field(figsize=figsize, show=False)
-
-    if invert:
-        matrix = 0 - matrix
+        ax = _field(
+            figsize=figsize, linecolor=linecolor, fieldcolor="white", show=False
+        )
 
     cfg = spadl_config
     x1, y1, x2, y2 = (
@@ -248,23 +257,34 @@ def heatmap(
     extent = (x1, x2, y1, y2)
 
     limits = ax.axis()
-    ax.imshow(
+    imobj = ax.imshow(
         matrix, extent=extent, aspect="auto", alpha=alpha, cmap=cmap, zorder=zheatmap
     )
     ax.axis(limits)
 
+    if cbar:
+        # dirty hack
+        # https://stackoverflow.com/questions/18195758/set-matplotlib-colorbar-size-to-match-graph
+        colorbar = plt.gcf().colorbar(
+            imobj, ax=ax, fraction=0.035, aspect=15, pad=-0.05
+        )
+        colorbar.minorticks_on()
+
+    plt.axis("scaled")
     if show:
         plt.show()
     return ax
 
-def heatmap_green(matrix, ax=None, figsize=None,show=True):
+
+def heatmap_green(matrix, ax=None, figsize=None, show=True):
     if ax is None:
-        ax = _field(linecolor="white",fieldcolor="white",show=False)
-    return heatmap(matrix,ax=ax,invert=True,show=show,cmap="RdYlGn")
+        ax = _field(linecolor="white", fieldcolor="white", show=False)
+    return heatmap(matrix, ax=ax, show=show, cmap="RdYlGn_r")
+
 
 def actions(
     location,
-    action_type = None,
+    action_type=None,
     result=None,
     team=None,
     label=None,
@@ -275,7 +295,7 @@ def actions(
     zoom=False,
     legloc="right",
     show=True,
-    show_legend = True
+    show_legend=True,
 ):
     ax = field(ax=ax, color=color, figsize=figsize, show=False)
     fig = plt.gcf()
@@ -310,23 +330,23 @@ def actions(
         label = [[t] for t in action_type]
     label = np.asarray(label)
     if label.ndim == 1:
-        label = label.reshape(-1,1)
-    assert label.ndim ==2
-    indexa =np.asarray([list(range(1,len(label)+1))]).reshape(-1,1)
-    label = np.concatenate([indexa,label],axis=1)
+        label = label.reshape(-1, 1)
+    assert label.ndim == 2
+    indexa = np.asarray([list(range(1, len(label) + 1))]).reshape(-1, 1)
+    label = np.concatenate([indexa, label], axis=1)
     if labeltitle is not None:
         labeltitle = list(labeltitle)
-        labeltitle.insert(0,"")
+        labeltitle.insert(0, "")
         labeltitle = [labeltitle]
-        label = np.concatenate([labeltitle,label])
+        label = np.concatenate([labeltitle, label])
         lines = get_lines(label)
         titleline = lines[0]
-        plt.plot(np.NaN, np.NaN, '-', color='none', label=titleline)
-        plt.plot(np.NaN, np.NaN, '-', color='none', label="-"*len(titleline))
+        plt.plot(np.NaN, np.NaN, "-", color="none", label=titleline)
+        plt.plot(np.NaN, np.NaN, "-", color="none", label="-" * len(titleline))
         lines = lines[1:]
     else:
         lines = get_lines(label)
-    
+
     m, n = location.shape
     if n != 2 and n != 4:
         raise ValueError("Location must have 2 or 4 columns")
@@ -347,31 +367,29 @@ def actions(
         mx = (xmin + xmax) / 2
         dx = (xmax - xmin) / 2
         my = (ymin + ymax) / 2
-        dy =(ymax - ymin) / 2
-        if type(zoom) == bool: 
-            d = max(dx,dy)
+        dy = (ymax - ymin) / 2
+        if type(zoom) == bool:
+            d = max(dx, dy)
         else:
             d = zoom
-        
-        text_offset = 0.07*d
+
+        text_offset = 0.07 * d
 
         zoompad = 5
 
-        xmin = max(mx-d,0) - zoompad
-        xmax = min(mx + d,spadl_config["length"]) + zoompad
-        ax.set_xlim(xmin,xmax)
-        ymin = max(my-d,0) - zoompad
-        ymax = min(my + d,spadl_config["width"]) + zoompad
-        ax.set_ylim(ymin,ymax)
-        
+        xmin = max(mx - d, 0) - zoompad
+        xmax = min(mx + d, spadl_config["length"]) + zoompad
+        ax.set_xlim(xmin, xmax)
+        ymin = max(my - d, 0) - zoompad
+        ymax = min(my + d, spadl_config["width"]) + zoompad
+        ax.set_ylim(ymin, ymax)
+
         h, w = fig.get_size_inches()
-        h, w = xmax - xmin , ymax - ymin
+        h, w = xmax - xmin, ymax - ymin
         newh, neww = figsize, w / h * figsize
 
         fig.set_size_inches(newh, neww, forward=True)
         arrowsize = (w + h) / 2 / 105 * arrowsize
-    
-
 
     eventmarkers = itertools.cycle(["s", "p", "h"])
     event_types = set(action_type)
@@ -400,7 +418,7 @@ def actions(
     cnt = 1
     for ty, r, loc, color, line in zip(action_type, result, location, colors, lines):
         [sx, sy, ex, ey] = loc
-        plt.text(sx+text_offset,sy,str(cnt))
+        plt.text(sx + text_offset, sy, str(cnt))
         cnt += 1
         if color == "blue":
             c = next(blue_markers)
@@ -452,11 +470,15 @@ def actions(
     if show_legend:
         if legloc == "top":
             leg = plt.legend(
-                bbox_to_anchor=(0.5, 1.05), loc="lower center", prop={"family": "monospace"}
+                bbox_to_anchor=(0.5, 1.05),
+                loc="lower center",
+                prop={"family": "monospace"},
             )
         elif legloc == "right":
             leg = plt.legend(
-                bbox_to_anchor=(1.05, 0.5), loc="center left", prop={"family": "monospace"}
+                bbox_to_anchor=(1.05, 0.5),
+                loc="center left",
+                prop={"family": "monospace"},
             )
 
     if show:
