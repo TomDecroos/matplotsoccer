@@ -7,7 +7,7 @@ To install it simply
 pip install matplotsoccer
 ```
 
-## 1. Plotting a 108 x 65 soccer field with `matplotsoccer.field()`:
+## 1. Plotting a 105 x 68 soccer field with `matplotsoccer.field()`:
 
 ![](img/whitefield.png)
 
