@@ -80,6 +80,8 @@ def _field(
     if ax is None:
         fig = plt.figure()
         ax = fig.gca()
+    elif ax is not None:
+        fig = ax.get_figure()
 
     # Pitch Outline & Centre Line
     x1, y1, x2, y2 = (
